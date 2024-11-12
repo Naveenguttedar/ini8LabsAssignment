@@ -9,8 +9,9 @@ const start = async () => {
     methosds: ["GET", "POST"],
   });
   try {
-    await fastify.listen({ port: 3000 });
-    console.log("Server is running on port 3000");
+    await fastify.listen({ host: "0.0.0.0", port: process.env.PORT || 3001 });
+;
+    console.log("Server is running on port 3001");
   } catch (err) {
     console.log(err);
   }
