@@ -17,7 +17,7 @@ project-root/
 │   │   │   ├── UserTable.tsx      # Displays user information in a table
 │   │   │  
 │   │   ├── App.tsx                # Main application entry point
-│   │   └── index.tsx              # React entry point
+│   │   └── main.tsx               # React entry point
 │   └── public/
 │       └── index.html             # Main HTML file
 ├── backend/
