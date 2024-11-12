@@ -4,7 +4,6 @@ import AddUserForm from "./Components/UserForm";
 import UserList from "./Components/UserList";
 import axios from "axios";
 
-// Type definition for User
 interface User {
   id: number;
   name: string;
@@ -14,12 +13,14 @@ interface User {
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
-
+  const [editingStatus, setEditingStatus] = useState<boolean>(false);
+  const [currentUser, setCureentUser] = useState<User | null>(null);
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/users");
-        console.log(response);
+        const response = await axios.get(
+          "https://ini8labsassignment.onrender.com/users",
+        );
         setUsers(response.data);
       } catch (error) {
         console.error(error);
@@ -30,7 +31,7 @@ const App: React.FC = () => {
 
   const addUser = (user: User) => {
     async function addUserData() {
-      await axios.post("http://localhost:3001/users", user, {
+      await axios.post("https://ini8labsassignment.onrender.com/users", user, {
         headers: { "Content-Type": "application/json" },
       });
     }
@@ -38,18 +39,34 @@ const App: React.FC = () => {
     addUserData();
   };
 
-  const updateUser = (updatedUser: User) => {
+  const updateUser = (modifiedUser: User) => {
+    console.log(modifiedUser);
     setUsers((prevUsers) =>
       prevUsers.map((user) =>
-        user.id === updatedUser.id ? updatedUser : user,
+        user.id === modifiedUser.id ? modifiedUser : user,
       ),
     );
+    async function updateUserData() {
+      await axios.put(
+        `https://ini8labsassignment.onrender.com/users/${modifiedUser.id}`,
+        modifiedUser,
+        { headers: { "Content-Type": "application/json" } },
+      );
+    }
+    setCureentUser(null);
+    setEditingStatus(false);
+    updateUserData();
   };
+  const editingUser = (updatedUser: User) => {
+    console.log(updatedUser);
+    setCureentUser(updatedUser);
 
+    setEditingStatus(true);
+  };
   const deleteUser = (id: number) => {
     setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
     async function deleteUserData() {
-      await axios.delete(`http://localhost:3001/users/${id}`);
+      await axios.delete(`https://ini8labsassignment.onrender.com/users/${id}`);
     }
     deleteUserData();
   };
@@ -57,16 +74,25 @@ const App: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto my-10 p-6 bg-white rounded-lg shadow-lg">
       <h1 className="text-3xl font-semibold text-blue-600 text-center mb-6">
-        User Registration
+        User Registration"
       </h1>
 
-      <AddUserForm onAddUser={addUser} />
+      {!editingStatus ? (
+        <AddUserForm onAddUser={addUser} />
+      ) : (
+        <AddUserForm
+          onAddUser={addUser}
+          editUser={currentUser}
+          editUserFunc={updateUser}
+        />
+      )}
+
       {users.length == 0 ? (
-        <div>No Users</div>
+        ""
       ) : (
         <UserList
           users={users}
-          onUpdateUser={updateUser}
+          onUpdateUser={editingUser}
           onDeleteUser={deleteUser}
         />
       )}
